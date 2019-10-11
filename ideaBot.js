@@ -22,7 +22,6 @@ exports.newIdea = (req, res) => {
   run()
 
   async function run() {
-    console.log('Cool. Here we go.')
     let actions = await chooseActions()
 
     let image = await createImage(actions)
@@ -32,7 +31,7 @@ exports.newIdea = (req, res) => {
     if (!postSuccess) {
       console.log(`Didn't work out this time.`)
     } else {
-      console.log('We did it.')
+      console.log('Upload complete.')
     }
 
     return res.status(200).send('Message received')
@@ -98,13 +97,6 @@ exports.newIdea = (req, res) => {
       }
     } else {
       console.log(`Image upload failed`)
-      // let text = `An app that ${actions[0]} when somebody ${actions[1]}.`
-      // try {
-      //   return await client.post('statuses/update', { status: text })
-      // } catch (err) {
-      //   console.log(err)
-      //   return false
-      // }
       return false
     }
   }
@@ -121,7 +113,6 @@ exports.newIdea = (req, res) => {
       })
       return responseData.data.media_id_string
     } catch (err) {
-      console.log('Blech')
       console.log(err)
       return false
     }
