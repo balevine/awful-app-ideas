@@ -1,27 +1,21 @@
-Welcome to Glitch
-=================
+# Awful App Ideas
 
-Click `Show` in the header to see your app live. Updates to your code will instantly deploy and update live.
+A Twitter bot that posts a new awful app idea every day. Or whenever.
 
-**Glitch** is the friendly community where you'll build the app of your dreams. Glitch lets you instantly create, remix, edit, and host an app, bot or site, and you can invite collaborators or helpers to simultaneously edit code with you.
+Ideas are of the form:
 
-Find out more [about Glitch](https://glitch.com/about).
+An app that {does something} when somebody {does something else}.
 
+The first action is pulled from the `consequences.yml` file. The second action is pulled from the `events.yml` file.
 
-Your Project
-------------
+The text is placed on an image from the `images` directory.
 
-On the front-end,
-- edit `public/client.js`, `public/style.css` and `views/index.html`
-- drag in `assets`, like images or music, to add them to your project
+The consequence, event, and image are all chosen randomly each time.
 
-On the back-end,
-- your app starts at `server.js`
-- add frameworks and packages in `package.json`
-- safely store app secrets in `.env` (nobody can see this but you and people you invite)
+To trigger the post, we're using [cron-job.org](https://cron-job.org) set to hit the endpoint every day at 8:00pm CEST.
 
+The endpoint for the app is:
 
-Made by [Glitch](https://glitch.com/)
--------------------
-
-\ ゜o゜)ノ
+```
+https://awful-app-ideas.glitch.me/post-a-new-idea-G53x6P5g
+```
