@@ -48,7 +48,7 @@ exports.newIdea = (req, res) => {
     let text = `An app that ${actions[0]} when somebody ${actions[1]}.`
     // choose an image from the files in /assets/images
     let imageNames = []
-    fs.readdirSync('/images').forEach(file => {
+    fs.readdirSync('images').forEach(file => {
       imageNames.push(file)
     })
     const imageName = imageNames[Math.floor(Math.random() * imageNames.length)]
@@ -61,7 +61,7 @@ exports.newIdea = (req, res) => {
       x,
       y,
       {
-        text: 'Hello world!',
+        text: text,
         alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER
       },
       500,
