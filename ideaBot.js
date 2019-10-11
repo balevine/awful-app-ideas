@@ -52,11 +52,14 @@ exports.newIdea = (req, res) => {
       imageNames.push(file)
     })
     const imageName = imageNames[Math.floor(Math.random() * imageNames.length)]
+    image = await Jimp.read(`images/${imageName}`)
+    newImage = await image.clone()
+    await newImage.resize(600, Jimp.AUTO)
+
     let x = 10
     let y = 10
-    image = await Jimp.read(imageName)
-    let font = await Jimp.loadFont(Jimp.FONT_SANS_64_WHITE)
-    image = await image.print(
+    let font = await Jimp.loadFont(Jimp.FONT_SANS_32_WHITE)
+    await newImage.print(
       font,
       x,
       y,
@@ -64,10 +67,10 @@ exports.newIdea = (req, res) => {
         text: text,
         alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER
       },
-      500,
-      200
+      580,
+      110
     )
-    return image
+    return newImage
   }
 
   async function postToTwitter(image) {
@@ -78,24 +81,10 @@ exports.newIdea = (req, res) => {
       access_token_secret: process.env.TWITTER_ACCESS_TOKEN_SECRET
     })
 
-    // let imageID = await uploadImage(client, image)
+    let imageID = await uploadImage(client, image)
 
     try {
-      // const media_id = client.post('media/upload', { media: image })
-      // return media_id
-      initUpload() // Declare that you wish to upload some media
-        .then(appendUpload) // Send the data for the media
-        .then(finalizeUpload) // Declare that you are done uploading chunks
-        .then(mediaId => {
-          // You now have an uploaded movie/animated gif
-          // that you can reference in Tweets, e.g. `update/statuses`
-          // will take a `mediaIds` param.
-          const status = client.post('statuses/update', { media_ids: mediaId })
-        })
-        .then(status => {
-          console.log(status)
-          return status
-        })
+      return await client.post('statuses/update', { media_ids: imageID })
     } catch (err) {
       console.log(err)
       return false
@@ -104,75 +93,11 @@ exports.newIdea = (req, res) => {
 
   async function uploadImage(client, image) {
     try {
-      // const media_id = client.post('media/upload', { media: image })
-      // return media_id
-      initUpload() // Declare that you wish to upload some media
-        .then(appendUpload) // Send the data for the media
-        .then(finalizeUpload) // Declare that you are done uploading chunks
-        .then(mediaId => {
-          // You now have an uploaded movie/animated gif
-          // that you can reference in Tweets, e.g. `update/statuses`
-          // will take a `mediaIds` param.
-        })
+      const media_id = client.post('media/upload', { media: image })
+      return media_id
     } catch (err) {
       console.log(err)
       return false
     }
-  }
-
-  /**
-   * Step 1 of 3: Initialize a media upload
-   * @return Promise resolving to String mediaId
-   */
-  function initUpload() {
-    return makePost('media/upload', {
-      command: 'INIT',
-      total_bytes: mediaSize,
-      media_type: mediaType
-    }).then(data => data.media_id_string)
-  }
-
-  /**
-   * Step 2 of 3: Append file chunk
-   * @param String mediaId    Reference to media object being uploaded
-   * @return Promise resolving to String mediaId (for chaining)
-   */
-  function appendUpload(mediaId) {
-    return makePost('media/upload', {
-      command: 'APPEND',
-      media_id: mediaId,
-      media: mediaData,
-      segment_index: 0
-    }).then(data => mediaId)
-  }
-
-  /**
-   * Step 3 of 3: Finalize upload
-   * @param String mediaId   Reference to media
-   * @return Promise resolving to mediaId (for chaining)
-   */
-  function finalizeUpload(mediaId) {
-    return makePost('media/upload', {
-      command: 'FINALIZE',
-      media_id: mediaId
-    }).then(data => mediaId)
-  }
-
-  /**
-   * (Utility function) Send a POST request to the Twitter API
-   * @param String endpoint  e.g. 'statuses/upload'
-   * @param Object params    Params object to send
-   * @return Promise         Rejects if response is error
-   */
-  function makePost(endpoint, params) {
-    return new Promise((resolve, reject) => {
-      client.post(endpoint, params, (error, data, response) => {
-        if (error) {
-          reject(error)
-        } else {
-          resolve(data)
-        }
-      })
-    })
   }
 }
