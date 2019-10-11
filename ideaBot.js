@@ -90,6 +90,17 @@ exports.newIdea = (req, res) => {
 
     if (imageID) {
       try {
+        let altText = `An app that ${actions[0]} when somebody ${actions[1]}.`
+        await client.post('media/metadata/create', {
+          media_id: imageID,
+          alt_text: { text: altText }
+        })
+      } catch (err) {
+        console.log(err)
+        return false
+      }
+
+      try {
         return await client.post('statuses/update', { media_ids: [imageID] })
       } catch (err) {
         console.log(err)
