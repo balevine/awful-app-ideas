@@ -1,0 +1,28 @@
+{
+  "name": "awful-app-ideas",
+  "version": "0.0.1",
+  "description": "A Node app to post bad ideas to Twitter",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "dotenv": "^6.0.0",
+    "express": "^4.16.4",
+    "jimp": "^0.8.4",
+    "twitter": "^1.7.1",
+    "yaml": "^1.7.1"
+  },
+  "engines": {
+    "node": "8.x"
+  },
+  "repository": {
+    "url": "https://glitch.com/edit/#!/hello-express"
+  },
+  "license": "MIT",
+  "keywords": [
+    "node",
+    "glitch",
+    "express"
+  ]
+}
