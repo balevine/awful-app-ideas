@@ -4,7 +4,9 @@ A Twitter bot that posts a new awful app idea every day. Or whenever.
 
 Ideas are of the form:
 
+```
 An app that {does something} when somebody {does something else}.
+```
 
 The first action is pulled from the `consequences.yml` file. The second action is pulled from the `events.yml` file.
 
