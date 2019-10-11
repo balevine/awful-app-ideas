@@ -1,2 +1,4 @@
 /node_modules/
 shrinkwrap.yaml
+.env
+temp_file*

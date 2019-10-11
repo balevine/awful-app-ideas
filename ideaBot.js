@@ -4,6 +4,7 @@ const YAML = require('yaml')
 const fs = require('fs')
 const Jimp = require('jimp')
 const Twitter = require('twitter')
+const Twit = require('twit')
 
 const fileEvents = fs.readFileSync('./events.yml', 'utf8')
 const actionsEvents = YAML.parse(fileEvents)
@@ -21,13 +22,18 @@ exports.newIdea = (req, res) => {
   run()
 
   async function run() {
+    console.log('Cool. Here we go.')
     let actions = await chooseActions()
 
     let image = await createImage(actions)
 
-    await postToTwitter(image)
+    const postSuccess = await postToTwitter(image, actions)
 
-    console.log('We did it.')
+    if (!postSuccess) {
+      console.log(`Didn't work out this time.`)
+    } else {
+      console.log('We did it.')
+    }
 
     return res.status(200).send('Message received')
   }
@@ -73,29 +79,49 @@ exports.newIdea = (req, res) => {
     return newImage
   }
 
-  async function postToTwitter(image) {
-    const client = new Twitter({
+  async function postToTwitter(image, actions) {
+    const client = new Twit({
       consumer_key: process.env.TWITTER_CONSUMER_KEY,
       consumer_secret: process.env.TWITTER_CONSUMER_SECRET,
-      access_token_key: process.env.TWITTER_ACCESS_TOKEN_KEY,
+      access_token: process.env.TWITTER_ACCESS_TOKEN_KEY,
       access_token_secret: process.env.TWITTER_ACCESS_TOKEN_SECRET
     })
 
     let imageID = await uploadImage(client, image)
 
-    try {
-      return await client.post('statuses/update', { media_ids: imageID })
-    } catch (err) {
-      console.log(err)
+    if (imageID) {
+      try {
+        return await client.post('statuses/update', { media_ids: [imageID] })
+      } catch (err) {
+        console.log(err)
+        return false
+      }
+    } else {
+      console.log(`Image upload failed`)
+      // let text = `An app that ${actions[0]} when somebody ${actions[1]}.`
+      // try {
+      //   return await client.post('statuses/update', { status: text })
+      // } catch (err) {
+      //   console.log(err)
+      //   return false
+      // }
       return false
     }
   }
 
   async function uploadImage(client, image) {
+    const mime = image.getMIME()
+    const base64content = await image.getBase64Async(mime)
+    const stripIt = 'data:image/png;base64,'
+    imgSrcString = base64content.replace(stripIt, '')
     try {
-      const media_id = client.post('media/upload', { media: image })
-      return media_id
+      // upload media to twitter
+      const responseData = await client.post('media/upload', {
+        media_data: imgSrcString
+      })
+      return responseData.data.media_id_string
     } catch (err) {
+      console.log('Blech')
       console.log(err)
       return false
     }
