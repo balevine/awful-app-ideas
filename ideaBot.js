@@ -49,7 +49,7 @@ exports.newIdea = (req, res) => {
   }
 
   async function createImage(actions) {
-    let image
+    let image, newImage
     let text = `An app that ${actions[0]} when somebody ${actions[1]}.`
     // choose an image from the files in /assets/images
     let imageNames = []
@@ -105,7 +105,7 @@ exports.newIdea = (req, res) => {
     const mime = image.getMIME()
     const base64content = await image.getBase64Async(mime)
     const stripIt = 'data:image/png;base64,'
-    imgSrcString = base64content.replace(stripIt, '')
+    const imgSrcString = base64content.replace(stripIt, '')
     try {
       // upload media to twitter
       const responseData = await client.post('media/upload', {
