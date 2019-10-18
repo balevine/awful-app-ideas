@@ -16,7 +16,7 @@ The consequence, event, and image are all chosen randomly each time.
 
 To trigger the post, we're using [cron-job.org](https://cron-job.org) set to hit the endpoint every day at 8:00pm CEST.
 
-The endpoint for the app is:
+The endpoint for the app is defined in the `.env` file and should look something like this:
 
 ```
 https://awful-app-ideas.glitch.me/post-a-new-idea-G53x6P5g
